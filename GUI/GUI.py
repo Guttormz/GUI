@@ -23,9 +23,120 @@ c.execute('DELETE FROM kunde WHERE Fornavn = "fname"') # Sletter alle linjer som
 
 conn.commit() # Lagrer endringene
 
+def lag_kunde():
 
+    def reg():
+        fname_entry.get()
+        ename_entry.get()
+        epost_entry.get()
+        telefon_entry.get()
+        postnr_entry.get()
+
+        conn = sq.connect('personer.db') # Oppretter en database
+
+        c = conn.cursor() # Oppretter en cursor
+
+        c.execute("SELECT * FROM kunde ORDER BY kundenummer DESC LIMIT 1") # Henter kunden med høyest kundenummer
+        max = c.fetchall() # Lagrer resultatet i en variabel
+        for row in max: # Går gjennom hver linje i variabelen
+                next # Går til neste linje
+        tall = int(row[0]) # Lagrer kundenummeret i en variabel
+        tall = tall+1
+
+        f = open('randoms.csv', 'a')
+        f.write(str(tall) + "," + fname_entry.get() + "," + ename_entry.get() + "," + epost_entry.get() + "," + telefon_entry.get() + "," + postnr_entry.get() + "\n") # Legger til hver linje i tabellen post
+
+        messagebox.showinfo("Registrert", "Kunden er registrert med kundenummer " + str(tall)) # Viser en melding om at kunden er registrert
+    
+    root = tk.Tk() # Oppretter et vindu
+    root.geometry("800x650") # Setter størrelsen på vinduet
+    root.resizable(False, False) # Gjør det umulig å endre størrelsen på vinduet
+
+    fname_label = tk.Label(root, text="Fornavn:", font=("Arial", 20)) # Oppretter en label med teksten "Username:"
+    fname_entry = tk.Entry(root, font=("Arial", 20)) # Oppretter et brukernavnfelt
+
+    ename_label = tk.Label(root, text="Etternavn:", font=("Arial", 20)) # Oppretter en label med teksten "Password:"
+    ename_entry = tk.Entry(root, font=("Arial", 20)) # Oppretter et passordfelt
+
+    epost_label = tk.Label(root, text="Epost:", font=("Arial", 20)) # Oppretter en label med teksten "Password:"
+    epost_entry = tk.Entry(root, font=("Arial", 20)) # Oppretter et passordfelt
+
+    telefon_label = tk.Label(root, text="Telefon:", font=("Arial", 20)) # Oppretter en label med teksten "Password:"
+    telefon_entry = tk.Entry(root, font=("Arial", 20)) # Oppretter et passordfelt
+
+    postnr_label = tk.Label(root, text="Postnummer:", font=("Arial", 20)) # Oppretter en label med teksten "Password:"
+    postnr_entry = tk.Entry(root, font=("Arial", 20)) # Oppretter et passordfelt
+
+
+
+    fname_label.pack(pady=10) # Plasserer brukernavnlabelen øverst på skjermen
+    fname_entry.pack(pady=5) # Plasserer brukernavnfeltet under brukernavnlabelen
+
+    ename_label.pack(pady=10) # Plasserer passordlabelen under brukernavnfeltet
+    ename_entry.pack(pady=5) # Plasserer passordfeltet under passordlabelen
+
+    epost_label.pack(pady=10) # Plasserer passordlabelen under brukernavnfeltet
+    epost_entry.pack(pady=5) # Plasserer passordfeltet under passordlabelen
+
+    telefon_label.pack(pady=10) # Plasserer passordlabelen under brukernavnfeltet
+    telefon_entry.pack(pady=5) # Plasserer passordfeltet under passordlabelen
+
+    postnr_label.pack(pady=10) # Plasserer passordlabelen under brukernavnfeltet
+    postnr_entry.pack(pady=5) # Plasserer passordfeltet under passordlabelen
+
+    registrer = tk.Button(root, text="Registrer", font=("Arial", 20), bg="green", fg="white", command= lambda: reg()) # Oppretter en knapp med teksten "Registrer"
+    registrer.pack(pady=10) # Plasserer knappen under postnrfeltet
+
+    tilbake_button = tk.Button(root, text="Tilbake", bg="yellow", fg="white", padx=0, pady=0, font=("Arial", 40), command=lambda: [søk(), root.destroy()]) # Oppretter en tilbakeknapp
+    tilbake_button.place(x=590, y=0) # Plasserer tilbakeknappen øverst til høyre på skjermen
+
+def slett_kunde():
+    def sikker():
+        kunde = kundenr_entry.get()
+        ask = tk.messagebox.askquestion("Sikker?", "Er du sikker på at du vil slette kunde " + str(kunde) + "?", icon='warning')
+        if ask == 'yes':
+            with open('randoms.csv', 'r') as f:
+                lines = f.readlines()
+
+            with open('randoms.csv', 'w') as f:
+                for number, line in enumerate(lines):
+                    if number not in [int(kunde)]:
+                        f.write(line)
+        else:
+            pass
+
+    root = tk.Tk() # Oppretter et vindu
+    root.geometry("800x650") # Setter størrelsen på vinduet
+    root.resizable(False, False) # Gjør det umulig å endre størrelsen på vinduet
+
+    kundenr_label = tk.Label(root, text="Skriv inn kundenummer på den du vil slette", font=("Arial", 20)) # Oppretter en label med teksten "Username:"
+    kundenr_entry = tk.Entry(root, font=("Arial", 20)) # Oppretter et brukernavnfelt
+
+    kundenr_label.pack(pady=10) # Plasserer brukernavnlabelen øverst på skjermen
+    kundenr_entry.pack(pady=5) # Plasserer brukernavnfeltet under brukernavnlabelen
+
+    registrer = tk.Button(root, text="Slett", font=("Arial", 20), bg="red", fg="white", command= lambda: sikker()) # Oppretter en knapp med teksten "Slett"
+    registrer.pack(pady=10) # Plasserer knappen under postnrfeltet
+
+    tilbake_button = tk.Button(root, text="Tilbake", bg="yellow", fg="white", padx=0, pady=0, font=("Arial", 40), command=lambda: [søk(), root.destroy()]) # Oppretter en tilbakeknapp
+    tilbake_button.place(x=590, y=0) # Plasserer tilbakeknappen øverst til høyre på skjermen
 
 def søk():
+    if c.execute("SELECT name FROM sqlite_schema WHERE type='table' AND name='kunde'"): # Sjekker om tabellen post eksisterer
+        try: 
+            c.execute("DROP TABLE kunde") # Prøver å slette tabellen post
+        except:
+            sq.OperationalError # Hvis tabellen ikke eksisterer, så vil den ikke bli slettet
+
+    c.execute('CREATE TABLE IF NOT EXISTS kunde (kundenummer NUMBER, fornavn TEXT, etternavn TEXT, epost TEXT, telefon NUMBER, postnummer NUMBER)') # Oppretter tabellen post
+
+    f = open('randoms.csv', 'r') # Åpner filen randoms.csv i read
+    for line in f: # Går gjennom hver linje i filen
+        c.execute('INSERT INTO kunde VALUES (?,?,?,?,?,?)', (line.split(','))) # Legger til hver linje i tabellen post
+
+    c.execute('DELETE FROM kunde WHERE Fornavn = "fname"') # Sletter alle linjer som har "fname" i kolonnen Fornavn
+
+    conn.commit() # Lagrer endringene
 
     def search():
         for widget in result_frame.winfo_children(): # Fjerner alle widgets fra result_frame
@@ -72,9 +183,15 @@ def søk():
     result_frame = tk.Frame(root) # Oppretter en ramme
     result_frame.pack(side="top", fill="both", expand=True) # Plasserer rammen under søkefeltet
 
-    tilbake_button = tk.Button(root, text="Tilbake", padx=0, pady=0, font=("Arial", 40), command=lambda: [admin(), root.destroy()]) # Oppretter en tilbakeknapp
+    tilbake_button = tk.Button(root, text="Tilbake", bg="yellow", fg="white", padx=0, pady=0, font=("Arial", 40), command=lambda: [admin(), root.destroy()]) # Oppretter en tilbakeknapp
     tilbake_button.place(x=590, y=0) # Plasserer tilbakeknappen øverst til høyre på skjermen
-    
+
+    lage_button = tk.Button(root, text="Lag ny kunde", padx=0, pady=0, font=("Arial", 40), command=lambda: [lag_kunde(), root.destroy()]) # Oppretter en lag ny kunde knapp
+    lage_button.place(x=260, y=300) # Plasserer lag ny kunde knappen øverst til venstre på skjermen
+
+    slette_button = tk.Button(root, text="Slett en kunde", padx=0, pady=0, font=("Arial", 40), command=lambda: [slett_kunde(), root.destroy()]) # Oppretter en lag ny kunde knapp
+    slette_button.place(x=250, y=420) # Plasserer lag ny kunde knappen øverst til venstre på skjermen
+
 def admin(): 
 
     def logout():
@@ -85,13 +202,13 @@ def admin():
     root.geometry("800x900") # Setter størrelsen på vinduet
     root.resizable(False, False) # Gjør det umulig å endre størrelsen på vinduet
 
-    login_button = tk.Button(root, text="Logout", padx=0, pady=0, font=("Arial", 50), command=lambda: [logout(), root.destroy()]) # Oppretter en logoutknapp
-    login_button.place(x=550, y=0) # Plasserer logoutknappen øverst til høyre på skjermen
+    logout_button = tk.Button(root, text="Logout", padx=0, pady=0, font=("Arial", 50), command=lambda: [logout(), root.destroy()]) # Oppretter en logoutknapp
+    logout_button.place(x=550, y=0) # Plasserer logoutknappen øverst til høyre på skjermen
 
     sok_button = tk.Button(root, text="Søk", padx=0, pady=0, font=("Arial", 50), command=lambda: [søk(), root.destroy()]) # Oppretter en søkeknapp
     sok_button.place(x=300, y=0) # Plasserer søkeknappen i midten på toppen av skjermen
 
-    avslutt_button = tk.Button(root, text="Avslutt", padx=0, pady=0, font=("Arial", 50), command=root.destroy) # Oppretter en avsluttknapp
+    avslutt_button = tk.Button(root, text="Avslutt", bg="red", fg="white", padx=0, pady=0, font=("Arial", 50), command=root.destroy) # Oppretter en avsluttknapp
     avslutt_button.place(x=540, y=770) # Plasserer avsluttknappen nederst til høyre på skjermen
 
 def log():
@@ -131,7 +248,7 @@ def hovedside():
     login_button = tk.Button(root, bg="green", fg="white", text="Login", padx=0, pady=0, font=("Arial", 50), command=lambda: [log(), root.destroy()]) # Oppretter en loginknapp
     login_button.place(x=300, y=0) # Plasserer loginknappen øverst i midten på skjermen
 
-    avslutt_button = tk.Button(root, text="Avslutt", padx=0, pady=0, font=("Arial", 50), command=root.destroy) # Oppretter en avsluttknapp
+    avslutt_button = tk.Button(root, text="Avslutt", bg="red", fg="white", padx=0, pady=0, font=("Arial", 50), command=root.destroy) # Oppretter en avsluttknapp
     avslutt_button.place(x=540, y=770) # Plasserer avsluttknappen nederst til høyre på skjermen
 
     root.mainloop() # Starter hovedløkken
